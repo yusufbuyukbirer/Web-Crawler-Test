@@ -3,7 +3,7 @@ import scrapy
 class BauhaushirdavatSpider(scrapy.Spider):
     name = 'bauhausHirdavat'
     allowed_domains = ['www.bauhaus.com.tr']
-    start_urls = ["https://www.bauhaus.com.tr/bauhaus-hirdavat?pg=%d" % i for i in range(1,226)]
+    start_urls = ["https://www.bauhaus.com.tr/bauhaus-hirdavat?pg=1"]
 
     headers = {
         'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/100.0.4896.127 Safari/537.36'
@@ -22,5 +22,7 @@ class BauhaushirdavatSpider(scrapy.Spider):
                 'productName': item[1],
                 'price': item[2],
             }
-
             yield crawled_info
+
+        for link in response.css('div.pagination > a::attr(href)'):
+            yield response.follow(link.get(), callback=self.parse)
